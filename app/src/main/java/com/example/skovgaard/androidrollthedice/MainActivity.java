@@ -26,8 +26,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Button rollDiceBtn, logBtn;
     private ImageView dice1, dice2;
-    private ListView mListView;
-    private Toolbar mToolbar;
 
     private static final Random RANDOM = new Random();
 
@@ -51,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
         logBtn = findViewById(R.id.logBtn);
         dice1 = findViewById(R.id.dice1);
         dice2 = findViewById(R.id.dice2);
-        mToolbar = findViewById(R.id.toolbar);
-        mListView = findViewById(R.id.diceLog);
 
 
         //Sensor
@@ -74,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+//                mListView.addView(dice1);
 
             }
         });
