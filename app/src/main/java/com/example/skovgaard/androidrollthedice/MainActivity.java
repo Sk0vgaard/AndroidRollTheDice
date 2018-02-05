@@ -1,6 +1,7 @@
 package com.example.skovgaard.androidrollthedice;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,16 +13,21 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.Gallery;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
 
-    private Button rollDiceBtn;
+    private Button rollDiceBtn, logBtn;
     private ImageView dice1, dice2;
+    private ListView mListView;
+    private Toolbar mToolbar;
 
     private static final Random RANDOM = new Random();
 
@@ -40,16 +46,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //XML
         rollDiceBtn = findViewById(R.id.rollDiceBtn);
+        logBtn = findViewById(R.id.logBtn);
         dice1 = findViewById(R.id.dice1);
         dice2 = findViewById(R.id.dice2);
+        mToolbar = findViewById(R.id.toolbar);
+        mListView = findViewById(R.id.diceLog);
 
+
+        //Sensor
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         mAccel = 0.00f;
         mAccelCurrent = SensorManager.GRAVITY_EARTH;
         mAccelLast = SensorManager.GRAVITY_EARTH;
-
         vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
         rollDiceBtn.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +70,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        logBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+            }
+        });
+
     }
+
+
 
 
 
