@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private float mAccelCurrent; // current acceleration including gravity
     private float mAccelLast; // last acceleration including gravity
 
+    public Vibrator vibrator;
+
 
 
     @Override
@@ -47,15 +50,58 @@ public class MainActivity extends AppCompatActivity {
         mAccelCurrent = SensorManager.GRAVITY_EARTH;
         mAccelLast = SensorManager.GRAVITY_EARTH;
 
+        vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+
         rollDiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 doAnimation();
-
             }
         });
 
+    }
+
+
+
+    public static int randomDiceValue() {
+        return RANDOM.nextInt(6) + 1;
+    }
+
+    private final SensorEventListener mSensorListener = new SensorEventListener() {
+
+        //Checks if shake'd.
+        public void onSensorChanged(SensorEvent se) {
+            float x = se.values[0];
+            float y = se.values[1];
+            float z = se.values[2];
+            mAccelLast = mAccelCurrent;
+            mAccelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));
+            float delta = mAccelCurrent - mAccelLast;
+            mAccel = mAccel * 0.9f + delta; // perform low-cut filter
+
+            //How hard it is shake'd.
+            if (mAccel > 10) {
+//                Toast toast = Toast.makeText(getApplicationContext(), "Don't shake to hard", Toast.LENGTH_SHORT);
+//                toast.show();
+                doAnimation();
+            }
+
+        }
+
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        mSensorManager.unregisterListener(mSensorListener);
+        super.onPause();
     }
 
     private void doAnimation() {
@@ -101,45 +147,11 @@ public class MainActivity extends AppCompatActivity {
         //Runs the animation.
         dice1.startAnimation(anim1);
         dice2.startAnimation(anim2);
+        vibrator.vibrate(500);
+
     }
 
-    public static int randomDiceValue() {
-        return RANDOM.nextInt(6) + 1;
-    }
 
-    private final SensorEventListener mSensorListener = new SensorEventListener() {
 
-        public void onSensorChanged(SensorEvent se) {
-            float x = se.values[0];
-            float y = se.values[1];
-            float z = se.values[2];
-            mAccelLast = mAccelCurrent;
-            mAccelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));
-            float delta = mAccelCurrent - mAccelLast;
-            mAccel = mAccel * 0.9f + delta; // perform low-cut filter
-
-            if (mAccel > 10) {
-                Toast toast = Toast.makeText(getApplicationContext(), "Do not shake to hard!", Toast.LENGTH_LONG);
-                toast.show();
-                doAnimation();
-            }
-
-        }
-
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        }
-    };
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    @Override
-    protected void onPause() {
-        mSensorManager.unregisterListener(mSensorListener);
-        super.onPause();
-    }
 
 }
