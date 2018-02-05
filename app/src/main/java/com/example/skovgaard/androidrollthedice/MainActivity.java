@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView dice1, dice2;
 
 
-    public static final Random RANDOM = new Random();
+    private static final Random RANDOM = new Random();
 
 
     public static int randomDiceValue() {
@@ -43,36 +43,44 @@ public class MainActivity extends AppCompatActivity {
             }
 
             private void doAnimation() {
-                final Animation anim1 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
-                final Animation anim2 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
 
+                //Animation shake from anim folder. (anim folder is being used for animations).
+                final Animation anim1 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);;
+                final Animation anim2 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);;
+
+                //Animation class
                 final Animation.AnimationListener animationListener = new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
-                        int value = randomDiceValue();
-                        int res = getResources().getIdentifier("dice" + value, "drawable", "com.example.skovgaard.androidrollthedice");
-
-                        if (animation == anim1) {
-                            dice1.setImageResource(res);
-                        }else if (animation == anim2) {
-                            dice2.setImageResource(res);
-                        }
 
                     }
 
+                    //onAnimationEnd since we want to see the result AFTER the animation.
                     @Override
                     public void onAnimationEnd(Animation animation) {
+                        int diceNumber = randomDiceValue();
 
+                        //Drawable is where images is saved. defPackage is for MainActivity.
+                        int newRandomDice = getResources().getIdentifier("dice" + diceNumber, "drawable", "com.example.skovgaard.androidrollthedice");
+
+                        //Sets a "new" dice if the dice is the same.
+                        if (animation == anim1) {
+                            dice1.setImageResource(newRandomDice);
+                        }else if (animation == anim2) {
+                            dice2.setImageResource(newRandomDice);
+                        }
                     }
 
                     @Override
                     public void onAnimationRepeat(Animation animation) {
-
                     }
                 };
+
+
                 anim1.setAnimationListener(animationListener);
                 anim2.setAnimationListener(animationListener);
 
+                //Runs the animation.
                 dice1.startAnimation(anim1);
                 dice2.startAnimation(anim2);
             }
