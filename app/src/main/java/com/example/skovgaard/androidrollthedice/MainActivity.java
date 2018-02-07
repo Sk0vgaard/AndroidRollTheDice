@@ -1,25 +1,25 @@
 package com.example.skovgaard.androidrollthedice;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Vibrator;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,7 +29,10 @@ public class MainActivity extends AppCompatActivity {
     private ImageView dice1, dice2;
     private Spinner mSpinner;
 
+
     private static final Random RANDOM = new Random();
+    ArrayList<Integer> diceList = new ArrayList<Integer>();
+
 
 
     private SensorManager mSensorManager;
@@ -53,14 +56,8 @@ public class MainActivity extends AppCompatActivity {
         dice2 = findViewById(R.id.dice2);
         mSpinner = findViewById(R.id.spinner);
 
-
-        //Sensor
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-        mAccel = 0.00f;
-        mAccelCurrent = SensorManager.GRAVITY_EARTH;
-        mAccelLast = SensorManager.GRAVITY_EARTH;
         vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+
 
         rollDiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,18 +70,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
-
             }
         });
 
+        Sensor();
     }
 
+    private void Sensor() {
+        //Sensor
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        mAccel = 0.00f;
+        mAccelCurrent = SensorManager.GRAVITY_EARTH;
+        mAccelLast = SensorManager.GRAVITY_EARTH;
+    }
 
-
-
-
-    public static int randomDiceValue() {
+    private static int randomDiceValue() {
         return RANDOM.nextInt(6) + 1;
     }
 
@@ -113,53 +114,25 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    @Override
-    protected void onPause() {
-        mSensorManager.unregisterListener(mSensorListener);
-        super.onPause();
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+//    }
+//
+//    @Override
+//    protected void onPause() {
+//        mSensorManager.unregisterListener(mSensorListener);
+//        super.onPause();
+//    }
 
     private void doAnimation() {
 
         //Animation shake from anim folder. (anim folder is being used for animations).
         final Animation anim1 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
-        ;
+
         final Animation anim2 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
-        ;
-
-        //Animation class
-        final Animation.AnimationListener animationListener = new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            //onAnimationEnd since we want to see the result AFTER the animation.
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                int diceNumber = randomDiceValue();
-
-                //Drawable is where images is saved. defPackage is for MainActivity.
-                int newRandomDice = getResources().getIdentifier("dice" + diceNumber, "drawable", "com.example.skovgaard.androidrollthedice");
-
-                //Sets a "new" dice if the dice is the same.
-                if (animation == anim1) {
-                    dice1.setImageResource(newRandomDice);
-                } else if (animation == anim2) {
-                    dice2.setImageResource(newRandomDice);
-                }
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        };
+        final Animation.AnimationListener animationListener = startAnimation(anim1, anim2);
 
 
         anim1.setAnimationListener(animationListener);
@@ -172,7 +145,53 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @NonNull
+    private Animation.AnimationListener startAnimation(final Animation anim1, final Animation anim2) {
+        //Animation class
+        return new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            //onAnimationEnd since we want to see the result AFTER the animation.
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                RandomDice(animation, anim1, anim2);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        };
+    }
+
+    private void RandomDice(Animation animation, Animation anim1, Animation anim2) {
+        int diceNumber = randomDiceValue();
+
+        //Drawable is where images is saved. defPackage is for MainActivity.
+        int newRandomDice = getResources().getIdentifier("dice" + diceNumber, "drawable", "com.example.skovgaard.androidrollthedice");
+
+        //Sets a "new" dice if the dice is the same.
+        if (animation == anim1) {
+            dice1.setImageResource(newRandomDice);
+        } else if (animation == anim2) {
+            dice2.setImageResource(newRandomDice);
+        }
+        
+        diceList.add(diceNumber);
+        //Sort by newest to be on top.
+        Collections.reverse(diceList);
+        Log.d("Catching", diceList + "TEST");
+
+        //Adds the new roll to the spinner.
+        ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this,android.R.layout.simple_spinner_item, diceList);
+        mSpinner.setAdapter(adapter);
+
+
+    }
+
+    }
 
 
 
-}
