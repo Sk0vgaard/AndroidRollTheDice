@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button rollDiceBtn, logBtn;
     private ImageView dice1, dice2;
+    private Spinner mSpinner;
 
     private static final Random RANDOM = new Random();
 
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         logBtn = findViewById(R.id.logBtn);
         dice1 = findViewById(R.id.dice1);
         dice2 = findViewById(R.id.dice2);
+        mSpinner = findViewById(R.id.spinner);
 
 
         //Sensor
@@ -70,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-//                mListView.addView(dice1);
+
 
             }
         });
