@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
     public void addDiceToSpinner(int diceNumber) {
         diceList.add(diceNumber);
         //Sort by newest to be on top.
-        Collections.reverse(diceList);
+//        Collections.reverse(diceList);
         Log.d("Catching", diceList + "TEST");
 
         //Adds the new roll to the spinner.
