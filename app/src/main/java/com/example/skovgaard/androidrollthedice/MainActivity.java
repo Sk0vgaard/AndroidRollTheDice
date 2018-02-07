@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 //    protected void onPause() {
 //        mSensorManager.unregisterListener(mSensorListener);
 //        super.onPause();
-//    }
+//    }IF NO VIBRATE UNCOMMENT THIS.
 
     private void doAnimation() {
 
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    private void RandomDice(Animation animation, Animation anim1, Animation anim2) {
+    public void RandomDice(Animation animation, Animation anim1, Animation anim2) {
         int diceNumber = randomDiceValue();
 
         //Drawable is where images is saved. defPackage is for MainActivity.
@@ -178,7 +178,12 @@ public class MainActivity extends AppCompatActivity {
         } else if (animation == anim2) {
             dice2.setImageResource(newRandomDice);
         }
-        
+
+        addDiceToSpinner(diceNumber);
+
+    }
+
+    public void addDiceToSpinner(int diceNumber) {
         diceList.add(diceNumber);
         //Sort by newest to be on top.
         Collections.reverse(diceList);
@@ -187,11 +192,9 @@ public class MainActivity extends AppCompatActivity {
         //Adds the new roll to the spinner.
         ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this,android.R.layout.simple_spinner_item, diceList);
         mSpinner.setAdapter(adapter);
-
-
     }
 
-    }
+} 
 
 
 
