@@ -19,12 +19,12 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
 
+    public static final int SENSOR_SENSITIVITY = 10;
     private Button rollDiceBtn, logBtn;
     private ImageView dice1, dice2;
     private Spinner mSpinner;
@@ -73,11 +73,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Sensor();
+        sensor();
     }
 
-    private void Sensor() {
-        //Sensor
+    private void sensor() {
+        //sensor
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         mAccel = 0.00f;
@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static int randomDiceValue() {
+        //Number from 1-6
         return RANDOM.nextInt(6) + 1;
     }
 
@@ -93,16 +94,22 @@ public class MainActivity extends AppCompatActivity {
 
         //Checks if shake'd.
         public void onSensorChanged(SensorEvent se) {
+            //Axis
             float x = se.values[0];
             float y = se.values[1];
             float z = se.values[2];
+            // After shake, Last gets the same axis as Current.
             mAccelLast = mAccelCurrent;
+            //Checks which axis is being used. (Two axis is a must)
             mAccelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));
             float delta = mAccelCurrent - mAccelLast;
+            //mAccel is a high-pass filter on the input. It has the effect of making sudden changes in acceleration. -
+            //Checks the sensitive to the forces at the extremes of each shake.
+            //0.0f tells the compiler that we intend to make the value a single precision floating point number. (part of High-pass Filter)
             mAccel = mAccel * 0.9f + delta; // perform low-cut filter
 
-            //How hard it is shake'd.
-            if (mAccel > 10) {
+
+            if (mAccel > SENSOR_SENSITIVITY) {
 //                Toast toast = Toast.makeText(getApplicationContext(), "Don't shake to hard", Toast.LENGTH_SHORT);
 //                toast.show();
                 doAnimation();
@@ -117,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 //    @Override
 //    protected void onResume() {
 //        super.onResume();
-//        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+//        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 //    }
 //
 //    @Override
@@ -130,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Animation shake from anim folder. (anim folder is being used for animations).
         final Animation anim1 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
-
         final Animation anim2 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
         final Animation.AnimationListener animationListener = startAnimation(anim1, anim2);
 
@@ -141,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         //Runs the animation.
         dice1.startAnimation(anim1);
         dice2.startAnimation(anim2);
+        //Length of the vibrate.
         vibrator.vibrate(500);
 
     }
@@ -169,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
     public void RandomDice(Animation animation, Animation anim1, Animation anim2) {
         int diceNumber = randomDiceValue();
 
-        //Drawable is where images is saved. defPackage is for MainActivity.
+        //Drawable is where images is located. defPackage is for MainActivity.
         int newRandomDice = getResources().getIdentifier("dice" + diceNumber, "drawable", "com.example.skovgaard.androidrollthedice");
 
         //Sets a "new" dice if the dice is the same.
