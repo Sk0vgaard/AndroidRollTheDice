@@ -63,12 +63,14 @@ public class MainActivity extends AppCompatActivity {
                 newGame();
                 return true;
             case R.id.exit:
-//                exit();
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 
     private void newGame() {
         Intent i = getBaseContext().getPackageManager()
