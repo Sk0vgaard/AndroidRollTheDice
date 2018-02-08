@@ -1,6 +1,8 @@
 package com.example.skovgaard.androidrollthedice;
 
+import android.content.ClipData;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,6 +12,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -24,25 +29,53 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
 
-    public static final int SENSOR_SENSITIVITY = 10;
     private Button rollDiceBtn, logBtn;
     private ImageView dice1, dice2;
     private Spinner mSpinner;
+
 
 
     private static final Random RANDOM = new Random();
     ArrayList<Integer> diceList = new ArrayList<Integer>();
 
 
-
+    //Sensor
     private SensorManager mSensorManager;
     private float mAccel; // acceleration apart from gravity
     private float mAccelCurrent; // current acceleration including gravity
     private float mAccelLast; // last acceleration including gravity
+    public static final int SENSOR_SENSITIVITY = 10;
 
     public Vibrator vibrator;
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.newGame:
+                newGame();
+                return true;
+            case R.id.exit:
+//                exit();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void newGame() {
+        Intent i = getBaseContext().getPackageManager()
+                .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
         diceList.add(diceNumber);
         //Sort by newest to be on top.
 //        Collections.reverse(diceList);
-        Log.d("Catching", diceList + "TEST");
+        Log.d("Catching", diceList + " From oldest -> newest");
 
         //Adds the new roll to the spinner.
         ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this,android.R.layout.simple_spinner_item, diceList);
