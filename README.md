@@ -1,1 +1,1 @@
-"# AndroidRollTheDice" 
+# AndroidRollTheDice
