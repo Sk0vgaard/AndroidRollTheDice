@@ -1,95 +1,40 @@
 package com.example.skovgaard.androidrollthedice;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Spinner;
 
-import java.util.ArrayList;
+import com.example.skovgaard.androidrollthedice.Model.DiceModel;
+
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
 
-    public static final int SENSOR_SENSITIVITY = 10;
-    private Button rollDiceBtn, logBtn;
-    private ImageView dice1, dice2;
-    private Spinner mSpinner;
-
-
+    public static final String PACKAGE = "com.example.skovgaard.androidrollthedice";
     private static final Random RANDOM = new Random();
-    ArrayList<Integer> diceList = new ArrayList<Integer>();
+    public static final int SENSOR_SENSITIVITY = 10;
 
-
+    private Button mRollDiceBtn, mHistoryBtn;
+    private ImageView mDice1, mDice2;
 
     private SensorManager mSensorManager;
     private float mAccel; // acceleration apart from gravity
     private float mAccelCurrent; // current acceleration including gravity
     private float mAccelLast; // last acceleration including gravity
-
-    public Vibrator vibrator;
-
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        //XML
-        rollDiceBtn = findViewById(R.id.rollDiceBtn);
-        logBtn = findViewById(R.id.logBtn);
-        dice1 = findViewById(R.id.dice1);
-        dice2 = findViewById(R.id.dice2);
-        mSpinner = findViewById(R.id.spinner);
-
-        vibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
-
-
-        rollDiceBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                doAnimation();
-            }
-        });
-
-        logBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
-        sensor();
-    }
-
-    private void sensor() {
-        //sensor
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-        mAccel = 0.00f;
-        mAccelCurrent = SensorManager.GRAVITY_EARTH;
-        mAccelLast = SensorManager.GRAVITY_EARTH;
-    }
-
-    private static int randomDiceValue() {
-        //Number from 1-6
-        return RANDOM.nextInt(6) + 1;
-    }
-
+    private Vibrator mVibrator;
     private final SensorEventListener mSensorListener = new SensorEventListener() {
 
         //Checks if shake'd.
@@ -121,6 +66,62 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
+    private DiceModel mDiceModel;
+
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        mDiceModel = DiceModel.getInstance();
+
+        //XML
+        mRollDiceBtn = findViewById(R.id.rollDiceBtn);
+        mHistoryBtn = findViewById(R.id.historyBtn);
+        mDice1 = findViewById(R.id.dice1);
+        mDice2 = findViewById(R.id.dice2);
+
+        mVibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+
+
+        mRollDiceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                doAnimation();
+            }
+        });
+
+        mHistoryBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = HistoryActivity.newIntent(view.getContext());
+                startActivity(intent);
+            }
+        });
+
+        sensor();
+    }
+
+    private void sensor() {
+        //sensor
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager.registerListener(mSensorListener,
+                mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        mAccel = 0.00f;
+        mAccelCurrent = SensorManager.GRAVITY_EARTH;
+        mAccelLast = SensorManager.GRAVITY_EARTH;
+    }
+
+    private static int randomDiceValue() {
+        //Number from 1-6
+        return RANDOM.nextInt(6) + 1;
+    }
+
+
 //    @Override
 //    protected void onResume() {
 //        super.onResume();
@@ -145,10 +146,10 @@ public class MainActivity extends AppCompatActivity {
         anim2.setAnimationListener(animationListener);
 
         //Runs the animation.
-        dice1.startAnimation(anim1);
-        dice2.startAnimation(anim2);
+        mDice1.startAnimation(anim1);
+        mDice2.startAnimation(anim2);
         //Length of the vibrate.
-        vibrator.vibrate(500);
+        mVibrator.vibrate(500);
 
     }
 
@@ -164,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
             //onAnimationEnd since we want to see the result AFTER the animation.
             @Override
             public void onAnimationEnd(Animation animation) {
-                RandomDice(animation, anim1, anim2);
+                rollTheDice(animation, anim1, anim2);
             }
 
             @Override
@@ -173,32 +174,33 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    public void RandomDice(Animation animation, Animation anim1, Animation anim2) {
+    public void rollTheDice(Animation animation, Animation anim1, Animation anim2) {
         int diceNumber = randomDiceValue();
 
         //Drawable is where images is located. defPackage is for MainActivity.
-        int newRandomDice = getResources().getIdentifier("dice" + diceNumber, "drawable", "com.example.skovgaard.androidrollthedice");
+        int newRandomDice = getResources().getIdentifier("dice" + diceNumber, "drawable", PACKAGE);
 
         //Sets a "new" dice if the dice is the same.
         if (animation == anim1) {
-            dice1.setImageResource(newRandomDice);
+            mDice1.setImageResource(newRandomDice);
         } else if (animation == anim2) {
-            dice2.setImageResource(newRandomDice);
+            mDice2.setImageResource(newRandomDice);
         }
 
+        // TODO ALH: Refactor to reflect new implementation
         addDiceToSpinner(diceNumber);
 
     }
 
     public void addDiceToSpinner(int diceNumber) {
-        diceList.add(diceNumber);
+        mDiceModel.addDice(diceNumber);
         //Sort by newest to be on top.
 //        Collections.reverse(diceList);
-        Log.d("Catching", diceList + "TEST");
-
-        //Adds the new roll to the spinner.
-        ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this,android.R.layout.simple_spinner_item, diceList);
-        mSpinner.setAdapter(adapter);
+//        Log.d("Catching", mDiceModel.getDiceList() + "TEST");
+//
+//        //Adds the new roll to the spinner.
+//        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mDiceModel.getDiceList());
+//        mSpinner.setAdapter(adapter);
     }
 
 } 
