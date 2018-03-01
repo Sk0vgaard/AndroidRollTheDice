@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        sensor();
+        setupSensor();
 
         // Placed at end to ensure dice will be reinstated at the right time
         if (savedInstanceState != null) {
@@ -155,6 +155,18 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSensorManager.unregisterListener(mSensorListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setupSensor();
     }
 
     private void initializeSpinner(){
@@ -263,8 +275,8 @@ public class MainActivity extends AppCompatActivity {
         mRollModel.addRoll(roll);
     }
 
-    private void sensor() {
-        //sensor
+    private void setupSensor() {
+        //setupSensor
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mSensorManager.registerListener(mSensorListener,
                 mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
