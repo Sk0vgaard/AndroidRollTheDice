@@ -12,6 +12,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private final int ROW_DIVIDER = 3;
     private final String TAG = "Test";
 
-    private Button mRollDiceBtn, mHistoryBtn;
+    private Button mRollDiceBtn;
 
     private SensorManager mSensorManager;
     private float mAccel; // acceleration apart from gravity
@@ -94,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
 
         //XML
         mRollDiceBtn = findViewById(R.id.rollDiceBtn);
-        mHistoryBtn = findViewById(R.id.historyBtn);
 
         mDiceLayout = findViewById(R.id.llDices);
         initializeSpinner();
@@ -110,15 +112,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mHistoryBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = HistoryActivity.newIntent(view.getContext());
-                startActivity(intent);
-            }
-        });
-
         sensor();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu_actionbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_goToHistory:{
+                Intent intent = HistoryActivity.newIntent(this);
+                startActivity(intent);
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void initializeSpinner(){
@@ -191,18 +205,6 @@ public class MainActivity extends AppCompatActivity {
         mAccelCurrent = SensorManager.GRAVITY_EARTH;
         mAccelLast = SensorManager.GRAVITY_EARTH;
     }
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        mSensorManager.unregisterListener(mSensorListener);
-//        super.onPause();
-//    }IF NO VIBRATE UNCOMMENT THIS.
 
     private void shakeDiceAnimation() {
 
