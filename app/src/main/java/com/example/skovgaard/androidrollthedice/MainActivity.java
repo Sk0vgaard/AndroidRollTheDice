@@ -19,11 +19,11 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import com.example.skovgaard.androidrollthedice.Model.DiceModel;
+import com.example.skovgaard.androidrollthedice.BE.Roll;
+import com.example.skovgaard.androidrollthedice.Model.RollModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
-    private DiceModel mDiceModel;
+    private RollModel mRollModel;
 
     //Created by RKL
     private List<Dice> mDiceList;
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDiceModel = DiceModel.getInstance();
+        mRollModel = RollModel.getInstance();
 
         //XML
         mRollDiceBtn = findViewById(R.id.rollDiceBtn);
@@ -274,34 +274,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void rollTheDice(Animation animation, Animation anim1, Animation anim2) {
-        int diceNumber = randomDiceValue();
+        int dieNumber = randomDiceValue();
 
         //Drawable is where images is located. defPackage is for MainActivity.
-        int newRandomDice = getResources().getIdentifier("dice" + diceNumber, "drawable", PACKAGE);
+        int newRandomDie = getResources().getIdentifier("dice" + dieNumber, "drawable", PACKAGE);
 
         //TODO RKL: Set anim on programmatic dice.
         //Sets a "new" dice if the dice is the same.
-//        if (animation == anim1) {
-//
-//            mDice1.setImageResource(newRandomDice);
-//        } else if (animation == anim2) {
-//            mDice2.setImageResource(newRandomDice);
-//        }
+        if (animation == anim1) {
+//            mDice1.setImageResource(newRandomDie);
+        } else if (animation == anim2) {
+//            mDice2.setImageResource(newRandomDie);
+        }
+        Roll newRoll = new Roll();
+        newRoll.addDie(dieNumber);
 
-        // TODO ALH: Refactor to reflect new implementation
-        addDiceToSpinner(diceNumber);
+        mRollModel.addRoll(newRoll);
 
-    }
-
-    public void addDiceToSpinner(int diceNumber) {
-        mDiceModel.addDice(diceNumber);
-        //Sort by newest to be on top.
-//        Collections.reverse(diceList);
-//        Log.d("Catching", mDiceModel.getDiceList() + "TEST");
-//
-//        //Adds the new roll to the spinner.
-//        ArrayAdapter<Integer> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mDiceModel.getDiceList());
-//        mSpinner.setAdapter(adapter);
     }
 
     private class Dice extends AppCompatImageView{
@@ -353,8 +342,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-} 
+}
 
 
 
