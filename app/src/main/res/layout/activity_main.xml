@@ -9,27 +9,6 @@
                                              tools:context="com.example.skovgaard.androidrollthedice.MainActivity">
 
 
-    <ImageView
-        android:id="@+id/dice1"
-        android:layout_width="132dp"
-        android:layout_height="123dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="176dp"
-        android:src="@drawable/dice1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <ImageView
-        android:id="@+id/dice2"
-        android:layout_width="122dp"
-        android:layout_height="122dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="120dp"
-        android:src="@drawable/dice2"
-        app:layout_constraintStart_toEndOf="@+id/dice1"
-        app:layout_constraintTop_toBottomOf="@+id/historyBtn"/>
-
-
     <Button
         android:id="@+id/rollDiceBtn"
         android:layout_width="wrap_content"
@@ -54,6 +33,36 @@
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+
+    <Spinner
+        android:id="@+id/spnAmountOfDice"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/rollDiceBtn"
+        app:layout_constraintTop_toBottomOf="@+id/llDices" />
+
+    <LinearLayout
+        android:id="@+id/llDices"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/rollDiceBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/historyBtn">
+
+    </LinearLayout>
 
 
 </android.support.constraint.ConstraintLayout>
