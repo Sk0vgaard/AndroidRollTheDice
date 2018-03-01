@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addDiceToSpinner(int diceNumber) {
-        mDiceModel.addDice(diceNumber);
+        mDiceModel.addRoll(diceNumber);
         //Sort by newest to be on top.
 //        Collections.reverse(diceList);
 //        Log.d("Catching", mDiceModel.getDiceList() + "TEST");

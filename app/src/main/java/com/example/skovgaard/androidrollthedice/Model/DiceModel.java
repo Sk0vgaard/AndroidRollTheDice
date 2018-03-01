@@ -1,6 +1,9 @@
 package com.example.skovgaard.androidrollthedice.Model;
 
+import com.example.skovgaard.androidrollthedice.BE.Roll;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Adamino.
@@ -9,11 +12,9 @@ import java.util.ArrayList;
 public class DiceModel {
     private static DiceModel instance = null;
 
-    public ArrayList<Integer> getDiceList() {
-        return new ArrayList<>(mDiceList);
-    }
 
-    private ArrayList<Integer> mDiceList;
+
+    private List<Roll> mDiceList;
 
     public static DiceModel getInstance() {
         if (instance == null) {
@@ -22,11 +23,19 @@ public class DiceModel {
         return instance;
     }
 
+    public ArrayList<Roll> getDiceList() {
+        return new ArrayList<>(mDiceList);
+    }
+
     private DiceModel() {
         this.mDiceList = new ArrayList<>();
     }
 
-    public void addDice(int diceNumber) {
-        mDiceList.add(diceNumber);
+    public void addRoll(Roll roll) {
+        mDiceList.add(roll);
+    }
+
+    public Roll getRoll(int postitionInList) {
+        return mDiceList.get(postitionInList);
     }
 }
