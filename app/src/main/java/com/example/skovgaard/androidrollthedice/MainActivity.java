@@ -27,6 +27,7 @@ import android.widget.Spinner;
 import com.example.skovgaard.androidrollthedice.BE.Roll;
 import com.example.skovgaard.androidrollthedice.Model.RollModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -34,14 +35,11 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
 
-    public static final String PACKAGE = "com.example.skovgaard.androidrollthedice";
-    private static final Random RANDOM = new Random();
     public static final int SENSOR_SENSITIVITY = 10;
+    public static final String DICE_KEY = "DICE";
+    public static final String SPINER_KEY = "SPINNER";
 
-    private final int ROW_DIVIDER = 3;
-    private final String TAG = "Test";
-
-    private Button mRollDiceBtn;
+    private final int MAX_ROW_SIZE = 3;
 
     private SensorManager mSensorManager;
     private float mAccel; // acceleration apart from gravity
@@ -83,8 +81,12 @@ public class MainActivity extends AppCompatActivity {
     private RollModel mRollModel;
 
     private List<Dice> mDiceList;
+    private List<Integer> mDiceValues;
     private Spinner mAmountOfDice;
+    private int mSpinnerValue;
     private LinearLayout mDiceLayout;
+    private LinearLayout firstRow;
+    private LinearLayout secondRow;
 
 
 
@@ -94,18 +96,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mRollModel = RollModel.getInstance();
+        mDiceValues = new ArrayList<>();
 
         //XML
-        mRollDiceBtn = findViewById(R.id.rollDiceBtn);
+        Button rollDiceBtn = findViewById(R.id.rollDiceBtn);
 
         mDiceLayout = findViewById(R.id.llDices);
-        initializeSpinner();
 
+        initializeSpinner();
 
         mVibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
 
-        mRollDiceBtn.setOnClickListener(new View.OnClickListener() {
+        rollDiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 shakeDiceAnimation();
@@ -113,6 +116,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         sensor();
+
+        // Placed at end to ensure dice will be reinstated at the right time
+        if (savedInstanceState != null) {
+            mDiceValues = (List<Integer>) savedInstanceState.getSerializable(DICE_KEY);
+            mSpinnerValue = savedInstanceState.getInt(SPINER_KEY);
+            reinstateDice(mDiceValues);
+        }
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mDiceValues.clear();
+        for (Dice die : mDiceList) {
+            mDiceValues.add(die.getValue());
+        }
+        outState.putSerializable(DICE_KEY, (Serializable) mDiceValues);
+        outState.putInt(SPINER_KEY, mSpinnerValue);
     }
 
     @Override
@@ -145,7 +167,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 int amountOfDice = Integer.parseInt(parent.getItemAtPosition(position).toString());
-                createDice(amountOfDice);
+                // Check if spinner value is the same
+                if (amountOfDice != 0 && amountOfDice != mSpinnerValue) {
+                    mSpinnerValue = amountOfDice;
+                    createDice(amountOfDice);
+                }
             }
 
             @Override
@@ -156,30 +182,72 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Reinstate original dice from previous state
+     * @param diceValues
+     */
+    private void reinstateDice(List<Integer> diceValues) {
+        mDiceList = new ArrayList<>();
+        mDiceLayout.removeAllViews();
+        firstRow = new LinearLayout(this);
+        firstRow.setGravity(Gravity.CENTER);
+        for (int i = 0; i < MAX_ROW_SIZE; i++){
+            if(i < diceValues.size()){
+                createSingleDie(firstRow, mDiceList, diceValues.get(i));
+            }
+        }
+        mDiceLayout.addView(firstRow);
 
+        if(diceValues.size() > MAX_ROW_SIZE){
+            secondRow = new LinearLayout(this);
+            secondRow.setGravity(Gravity.CENTER);
+            for(int i = MAX_ROW_SIZE; i < diceValues.size(); i++){
+                createSingleDie(secondRow, mDiceList, diceValues.get(i));
+            }
+            mDiceLayout.addView(secondRow);
+        }
+    }
+
+
+    /**
+     * Create new random dice
+     * @param amountOfDice
+     */
     private void createDice(int amountOfDice){
         mDiceList = new ArrayList<>();
         mDiceLayout.removeAllViews();
-        LinearLayout firstRow = new LinearLayout(this);
+        firstRow = new LinearLayout(this);
         firstRow.setGravity(Gravity.CENTER);
-        for (int i = 0; i < ROW_DIVIDER; i++){
+        for (int i = 0; i < MAX_ROW_SIZE; i++){
             if(i < amountOfDice){
                 createSingleDie(firstRow, mDiceList);
             }
         }
         mDiceLayout.addView(firstRow);
-        if(amountOfDice> ROW_DIVIDER){
-            LinearLayout secondRow = new LinearLayout(this);
+        if(amountOfDice> MAX_ROW_SIZE){
+            secondRow = new LinearLayout(this);
             secondRow.setGravity(Gravity.CENTER);
-            for(int i = ROW_DIVIDER; i < amountOfDice; i++){
+            for(int i = MAX_ROW_SIZE; i < amountOfDice; i++){
                 createSingleDie(secondRow, mDiceList);
             }
             mDiceLayout.addView(secondRow);
         }
     }
 
+    /**
+     * Create Single die randomly
+     * @param layout
+     * @param list
+     */
     private void createSingleDie(LinearLayout layout, List<Dice> list){
         Dice dice = new Dice(this);
+        dice.setPadding(5, 5, 5, 5);
+        list.add(dice);
+        layout.addView(dice);
+    }
+
+    private void createSingleDie(LinearLayout layout, List<Dice> list, int value){
+        Dice dice = new Dice(this, value);
         dice.setPadding(5, 5, 5, 5);
         list.add(dice);
         layout.addView(dice);
@@ -241,14 +309,24 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    private class Dice extends AppCompatImageView{
+    private class Dice extends AppCompatImageView {
         private final int MAX = 6;
 
         private int mValue;
 
+        /**
+         * Create new random die
+         * @param context
+         */
         public Dice(Context context) {
             super(context);
             rollDie();
+        }
+
+        public Dice(Context context, int value) {
+            super(context);
+            mValue = value;
+            setImage();
         }
 
         public int getValue(){
