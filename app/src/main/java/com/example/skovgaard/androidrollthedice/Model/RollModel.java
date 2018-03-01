@@ -23,12 +23,12 @@ public class RollModel {
         return instance;
     }
 
-    public ArrayList<Roll> getDiceList() {
-        return new ArrayList<>(mDiceList);
-    }
-
     private RollModel() {
         this.mDiceList = new ArrayList<>();
+    }
+
+    public ArrayList<Roll> getDiceList() {
+        return new ArrayList<>(mDiceList);
     }
 
     public void addRoll(Roll roll) {
