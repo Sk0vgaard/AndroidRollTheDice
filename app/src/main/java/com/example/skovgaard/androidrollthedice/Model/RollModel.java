@@ -42,4 +42,8 @@ public class RollModel {
     public List<Roll> getRolls(){
         return mDiceList;
     }
+
+    public void clearRolls() {
+        mDiceList.clear();
+    }
 }
