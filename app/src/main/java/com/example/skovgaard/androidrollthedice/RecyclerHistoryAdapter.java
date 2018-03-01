@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.skovgaard.androidrollthedice.BE.Roll;
+import com.example.skovgaard.androidrollthedice.BLL.DieManager;
 import com.example.skovgaard.androidrollthedice.Model.RollModel;
 
 /**
@@ -50,11 +51,13 @@ public class RecyclerHistoryAdapter extends RecyclerView.Adapter<RecyclerHistory
 
         public void bind(Roll roll) {
             mRollInfo.setText(roll.getTimeAsString());
-            int die1 = mContext.getResources().getIdentifier("dice1", "drawable", MainActivity.PACKAGE);
 
-            ImageView dieImageView = new ImageView(mContext);
-            dieImageView.setImageResource(die1);
-            mDiceList.addView(dieImageView);
+            for (int currentDie : roll.getDice()) {
+                int dieResource = DieManager.getImage(currentDie);
+                ImageView dieImageView = new ImageView(mContext);
+                dieImageView.setImageResource(dieResource);
+                mDiceList.addView(dieImageView);
+            }
         }
     }
 }
