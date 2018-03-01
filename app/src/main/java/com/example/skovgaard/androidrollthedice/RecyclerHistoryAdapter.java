@@ -67,7 +67,7 @@ public class RecyclerHistoryAdapter extends RecyclerView.Adapter<RecyclerHistory
 
         @Override
         public void onClick(View v) {
-            String toastMessage = "The sum is: " + mRoll.getSum();
+            String toastMessage = mContext.getString(R.string.the_sum_is) + mRoll.getSum();
             Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT).show();
         }
     }
