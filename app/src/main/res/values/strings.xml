@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Android Roll The Dice</string>
     <string name="clear">Clear</string>
+    <string name="history">History</string>
 
     <string-array name="number_of_dice">
         <item>1</item>
