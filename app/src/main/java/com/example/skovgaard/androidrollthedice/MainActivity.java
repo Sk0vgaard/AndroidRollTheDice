@@ -191,8 +191,12 @@ public class MainActivity extends AppCompatActivity {
      * Created by RKL
      */
     private void rollDice(){
-        Log.v(TAG, "Called rollDice");
-        
+        Roll roll = new Roll();
+        for(Dice die: mDiceList){
+            die.rollDie();
+            roll.addDie(die.getValue());
+        }
+        mRollModel.addRoll(roll);
 //        doAnimation();
     }
 
@@ -300,14 +304,14 @@ public class MainActivity extends AppCompatActivity {
 
         public Dice(Context context) {
             super(context);
-            rollDice();
+            rollDie();
         }
 
         public int getValue(){
             return mValue;
         }
 
-        public void rollDice(){
+        public void rollDie(){
             Random rand = new Random();
             mValue = rand.nextInt(MAX) + 1;
             setImage();
