@@ -3,10 +3,12 @@ package com.example.skovgaard.androidrollthedice;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.skovgaard.androidrollthedice.BE.Roll;
 import com.example.skovgaard.androidrollthedice.BLL.DieManager;
@@ -36,20 +38,23 @@ public class RecyclerHistoryAdapter extends RecyclerView.Adapter<RecyclerHistory
         return mRollModel.getDiceList().size();
     }
 
-    public class HistoryHolder extends RecyclerView.ViewHolder {
+    public class HistoryHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView mRollInfo;
         LinearLayout mDiceList;
         Context mContext;
+        Roll mRoll;
 
         public HistoryHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.history_row_item, parent, false));
             mContext = parent.getContext();
+            itemView.setOnClickListener(this);
 
             mRollInfo = itemView.findViewById(R.id.txtRollInfo);
             mDiceList = itemView.findViewById(R.id.linearDice);
         }
 
         public void bind(Roll roll) {
+            mRoll = roll;
             mRollInfo.setText(roll.getTimeAsString());
 
             for (int currentDie : roll.getDice()) {
@@ -58,6 +63,12 @@ public class RecyclerHistoryAdapter extends RecyclerView.Adapter<RecyclerHistory
                 dieImageView.setImageResource(dieResource);
                 mDiceList.addView(dieImageView);
             }
+        }
+
+        @Override
+        public void onClick(View v) {
+            String toastMessage = "The sum is: " + mRoll.getSum();
+            Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT).show();
         }
     }
 }
