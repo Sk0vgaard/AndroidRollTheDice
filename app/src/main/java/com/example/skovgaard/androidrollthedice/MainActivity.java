@@ -11,7 +11,6 @@ import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
@@ -41,9 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Button mRollDiceBtn, mHistoryBtn;
 
-    //TODO RKL: Remove
-//    private ImageView mDice1, mDice2;
-
     private SensorManager mSensorManager;
     private float mAccel; // acceleration apart from gravity
     private float mAccelCurrent; // current acceleration including gravity
@@ -71,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             if (mAccel > SENSOR_SENSITIVITY) {
 //                Toast toast = Toast.makeText(getApplicationContext(), "Don't shake to hard", Toast.LENGTH_SHORT);
 //                toast.show();
-                rollDice();
+                shakeDiceAnimation();
             }
 
         }
@@ -83,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
     private RollModel mRollModel;
 
-    //Created by RKL
     private List<Dice> mDiceList;
     private Spinner mAmountOfDice;
     private LinearLayout mDiceLayout;
@@ -111,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         mRollDiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                rollDice();
+                shakeDiceAnimation();
             }
         });
 
@@ -126,9 +121,6 @@ public class MainActivity extends AppCompatActivity {
         sensor();
     }
 
-    /**
-     * Created by RKL
-     */
     private void initializeSpinner(){
         mAmountOfDice = findViewById(R.id.spnAmountOfDice);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -151,9 +143,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * Created by RKL
-     */
     private void createDice(int amountOfDice){
         mDiceList = new ArrayList<>();
         mDiceLayout.removeAllViews();
@@ -175,11 +164,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Created by RKL
-     * @param layout
-     * @param list
-     */
     private void createSingleDie(LinearLayout layout, List<Dice> list){
         Dice dice = new Dice(this);
         dice.setPadding(5, 5, 5, 5);
@@ -187,9 +171,7 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(dice);
     }
 
-    /**
-     * Created by RKL
-     */
+
     private void rollDice(){
         Roll roll = new Roll();
         for(Dice die: mDiceList){
@@ -197,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
             roll.addDie(die.getValue());
         }
         mRollModel.addRoll(roll);
-//        doAnimation();
     }
 
     private void sensor() {
@@ -211,13 +192,6 @@ public class MainActivity extends AppCompatActivity {
         mAccelLast = SensorManager.GRAVITY_EARTH;
     }
 
-    //TODO RKL: Is this method necessary?
-    private static int randomDiceValue() {
-        //Number from 1-6
-        return RANDOM.nextInt(6) + 1;
-    }
-
-
 //    @Override
 //    protected void onResume() {
 //        super.onResume();
@@ -230,34 +204,22 @@ public class MainActivity extends AppCompatActivity {
 //        super.onPause();
 //    }IF NO VIBRATE UNCOMMENT THIS.
 
-    private void doAnimation() {
+    private void shakeDiceAnimation() {
 
         //Animation shake from anim folder. (anim folder is being used for animations).
-        final Animation anim1 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
-        final Animation anim2 = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
-        final Animation.AnimationListener animationListener = startAnimation(anim1, anim2);
-
-
-        anim1.setAnimationListener(animationListener);
-        anim2.setAnimationListener(animationListener);
+        Animation shakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake);
+        shakeAnimation.setAnimationListener(shakeAnimationListener());
 
         for(Dice die: mDiceList){
-            die.setAnimation(anim1);
+            die.startAnimation(shakeAnimation);
         }
-
-        //TODO RKL: Remove
-        //Runs the animation.
-//        mDice1.startAnimation(anim1);
-//        mDice2.startAnimation(anim2);
-
-
         //Length of the vibrate.
         mVibrator.vibrate(500);
 
     }
 
     @NonNull
-    private Animation.AnimationListener startAnimation(final Animation anim1, final Animation anim2) {
+    private Animation.AnimationListener shakeAnimationListener() {
         //Animation class
         return new Animation.AnimationListener() {
             @Override
@@ -268,33 +230,13 @@ public class MainActivity extends AppCompatActivity {
             //onAnimationEnd since we want to see the result AFTER the animation.
             @Override
             public void onAnimationEnd(Animation animation) {
-                rollTheDice(animation, anim1, anim2);
+                rollDice();
             }
 
             @Override
             public void onAnimationRepeat(Animation animation) {
             }
         };
-    }
-
-    public void rollTheDice(Animation animation, Animation anim1, Animation anim2) {
-        int dieNumber = randomDiceValue();
-
-        //Drawable is where images is located. defPackage is for MainActivity.
-        int newRandomDie = getResources().getIdentifier("dice" + dieNumber, "drawable", PACKAGE);
-
-        //TODO RKL: Set anim on programmatic dice.
-        //Sets a "new" dice if the dice is the same.
-        if (animation == anim1) {
-//            mDice1.setImageResource(newRandomDie);
-        } else if (animation == anim2) {
-//            mDice2.setImageResource(newRandomDie);
-        }
-        Roll newRoll = new Roll();
-        newRoll.addDie(dieNumber);
-
-        mRollModel.addRoll(newRoll);
-
     }
 
     private class Dice extends AppCompatImageView{
