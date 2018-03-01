@@ -11,6 +11,7 @@ import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int SENSOR_SENSITIVITY = 10;
 
     private final int ROW_DIVIDER = 3;
+    private final String TAG = "Test";
 
     private Button mRollDiceBtn, mHistoryBtn;
 
@@ -69,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             if (mAccel > SENSOR_SENSITIVITY) {
 //                Toast toast = Toast.makeText(getApplicationContext(), "Don't shake to hard", Toast.LENGTH_SHORT);
 //                toast.show();
-                doAnimation();
+                rollDice();
             }
 
         }
@@ -109,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         mRollDiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                doAnimation();
+                rollDice();
             }
         });
 
@@ -185,6 +187,15 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(dice);
     }
 
+    /**
+     * Created by RKL
+     */
+    private void rollDice(){
+        Log.v(TAG, "Called rollDice");
+        
+//        doAnimation();
+    }
+
     private void sensor() {
         //sensor
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -196,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
         mAccelLast = SensorManager.GRAVITY_EARTH;
     }
 
+    //TODO RKL: Is this method necessary?
     private static int randomDiceValue() {
         //Number from 1-6
         return RANDOM.nextInt(6) + 1;
@@ -224,6 +236,10 @@ public class MainActivity extends AppCompatActivity {
 
         anim1.setAnimationListener(animationListener);
         anim2.setAnimationListener(animationListener);
+
+        for(Dice die: mDiceList){
+            die.setAnimation(anim1);
+        }
 
         //TODO RKL: Remove
         //Runs the animation.
