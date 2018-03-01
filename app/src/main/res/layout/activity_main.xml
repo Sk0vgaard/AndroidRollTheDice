@@ -15,8 +15,10 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:layout_marginStart="98dp"
+        android:backgroundTint="@color/colorPrimary"
         android:text="Roll the dice"
         android:textAlignment="center"
+        android:textColor="@android:color/background_light"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
