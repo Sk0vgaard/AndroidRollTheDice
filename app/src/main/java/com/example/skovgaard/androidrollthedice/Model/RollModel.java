@@ -38,4 +38,8 @@ public class RollModel {
     public Roll getRoll(int postitionInList) {
         return mDiceList.get(postitionInList);
     }
+
+    public List<Roll> getRolls(){
+        return mDiceList;
+    }
 }
