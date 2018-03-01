@@ -1,14 +1,19 @@
 package com.example.skovgaard.androidrollthedice.BE;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Adamino.
  */
 
 public class Roll {
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT =
+            new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
     public List<Integer> getDice() {
         return mDice;
     }
@@ -23,8 +28,7 @@ public class Roll {
     }
 
     public String getTimeAsString() {
-        // TODO: Fix this!
-        return "Test";
+        return SIMPLE_DATE_FORMAT.format(mDate);
     }
 
     public void addDie(int die) {
