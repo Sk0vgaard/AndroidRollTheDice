@@ -9,16 +9,16 @@ import java.util.List;
  * Created by Adamino.
  */
 
-public class DiceModel {
-    private static DiceModel instance = null;
+public class RollModel {
+    private static RollModel instance = null;
 
 
 
     private List<Roll> mDiceList;
 
-    public static DiceModel getInstance() {
+    public static RollModel getInstance() {
         if (instance == null) {
-            instance = new DiceModel();
+            instance = new RollModel();
         }
         return instance;
     }
@@ -27,7 +27,7 @@ public class DiceModel {
         return new ArrayList<>(mDiceList);
     }
 
-    private DiceModel() {
+    private RollModel() {
         this.mDiceList = new ArrayList<>();
     }
 

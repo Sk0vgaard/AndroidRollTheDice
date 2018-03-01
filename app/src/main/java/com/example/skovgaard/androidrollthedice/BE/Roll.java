@@ -10,19 +10,24 @@ import java.util.List;
 
 public class Roll {
     public List<Integer> getDice() {
-        return dice;
+        return mDice;
     }
 
     private Date mDate;
 
-    private List<Integer> dice;
+    private List<Integer> mDice;
 
     public Roll() {
         mDate = new Date();
-        this.dice = new ArrayList<>();
+        mDice = new ArrayList<>();
     }
 
-    public void setDice(List<Integer> dice) {
-        this.dice = dice;
+    public String getTimeAsString() {
+        // TODO: Fix this!
+        return "Test";
+    }
+
+    public void addDie(int die) {
+        mDice.add(die);
     }
 }
