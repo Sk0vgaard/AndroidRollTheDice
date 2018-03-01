@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@android:anim/linear_interpolator">
-    // An interpolator where the rate of change is constant.
-
-    //Rotates
+    <!--An interpolator where the rate of change is constant. Rotates-->
     <rotate
         android:duration="70"
         android:fromDegrees="-20"
@@ -11,17 +9,17 @@
         android:pivotY="50%"
         android:pivotX="50%"
         android:repeatCount="5"
-        android:repeatMode="reverse"
-        > </rotate>
+        android:repeatMode="reverse">
+    </rotate>
 
-    //Slides
+    <!--Slides-->
     <translate
         android:duration="70"
         android:fromXDelta="-20"
         android:toXDelta="20"
         android:repeatCount="5"
-        android:repeatMode="reverse"
-        > </translate>
+        android:repeatMode="reverse">
+    </translate>
 
 
 </set>
